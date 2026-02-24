@@ -9,9 +9,9 @@ class ResearcherController
 {
     private ResearcherService $service;
 
-    public function __construct()
+    public function __construct(ResearcherService $service)
     {
-        $this->service = new ResearcherService();
+        $this->service = $service;
     }
 
     public function index(): void

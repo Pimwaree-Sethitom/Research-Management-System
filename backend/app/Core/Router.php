@@ -5,8 +5,13 @@ namespace RMS\Backend\Core;
 class Router
 {
     private array $routes = [];
+    private Container $container;
 
-    /* ---------- REGISTER ROUTES ---------- */
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
     public function get(string $uri, array $action): void
     {
         $this->addRoute('GET', $uri, $action);
@@ -36,7 +41,6 @@ class Router
         ];
     }
 
-    /* ---------- DISPATCH ---------- */
     public function dispatch(string $method, string $uri): void
     {
         $uri = parse_url($uri, PHP_URL_PATH);
@@ -56,7 +60,8 @@ class Router
 
                 [$class, $methodName] = $route['action'];
 
-                $controller = new $class();
+                // 👇 ใช้ container แทน new
+                $controller = $this->container->get($class);
 
                 call_user_func_array([$controller, $methodName], $matches);
 

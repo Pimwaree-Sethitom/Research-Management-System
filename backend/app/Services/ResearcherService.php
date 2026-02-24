@@ -9,9 +9,9 @@ class ResearcherService
 {
     private Researcher $model;
 
-    public function __construct()
+    public function __construct(Researcher $model)
     {
-        $this->model = new Researcher();
+        $this->model = $model;
     }
 
     public function getAll(): array
