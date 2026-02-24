@@ -1,0 +1,20 @@
+{
+    "name": "pimwaree/backend",
+    "description": "Research Management System Backend API",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "RMS\\Backend\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Pimwaree-Sethitom",
+            "email": "pimwaree9072@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6",
+        "firebase/php-jwt": "^7.0"
+    }
+}
