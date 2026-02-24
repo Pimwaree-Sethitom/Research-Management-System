@@ -2,6 +2,9 @@
 
 namespace RMS\Backend\Core;
 
+use RMS\Backend\Core\Container;
+use RMS\Backend\Core\MiddlewareDispatcher;
+
 class Router
 {
     private array $routes = [];
@@ -12,32 +15,37 @@ class Router
         $this->container = $container;
     }
 
-    public function get(string $uri, array $action): void
+    public function get(string $uri, array $action, array $middlewares = []): void
     {
-        $this->addRoute('GET', $uri, $action);
+        $this->addRoute('GET', $uri, $action, $middlewares);
     }
 
-    public function post(string $uri, array $action): void
+    public function post(string $uri, array $action, array $middlewares = []): void
     {
-        $this->addRoute('POST', $uri, $action);
+        $this->addRoute('POST', $uri, $action, $middlewares);
     }
 
-    public function put(string $uri, array $action): void
+    public function put(string $uri, array $action, array $middlewares = []): void
     {
-        $this->addRoute('PUT', $uri, $action);
+        $this->addRoute('PUT', $uri, $action, $middlewares);
     }
 
-    public function delete(string $uri, array $action): void
+    public function delete(string $uri, array $action, array $middlewares = []): void
     {
-        $this->addRoute('DELETE', $uri, $action);
+        $this->addRoute('DELETE', $uri, $action, $middlewares);
     }
 
-    private function addRoute(string $method, string $uri, array $action): void
-    {
+    private function addRoute(
+        string $method,
+        string $uri,
+        array $action,
+        array $middlewares
+    ): void {
         $this->routes[] = [
             'method' => $method,
             'uri' => $uri,
-            'action' => $action
+            'action' => $action,
+            'middlewares' => $middlewares
         ];
     }
 
@@ -60,10 +68,22 @@ class Router
 
                 [$class, $methodName] = $route['action'];
 
-                // 👇 ใช้ container แทน new
                 $controller = $this->container->get($class);
 
-                call_user_func_array([$controller, $methodName], $matches);
+                //สร้าง dispatcher
+                $dispatcher = new MiddlewareDispatcher();
+
+                //ใส่ middleware ตาม route
+                foreach ($route['middlewares'] as $middlewareClass) {
+                    $dispatcher->add(
+                        $this->container->get($middlewareClass)
+                    );
+                }
+
+                //ห่อ controller call ด้วย closure
+                $dispatcher->dispatch(function () use ($controller, $methodName, $matches) {
+                    call_user_func_array([$controller, $methodName], $matches);
+                });
 
                 return;
             }
