@@ -10,10 +10,20 @@ class Router
     private array $routes = [];
     private Container $container;
 
+    // สำหรับ group
+    private string $currentGroupPrefix = '';
+    private array $currentGroupMiddlewares = [];
+
     public function __construct(Container $container)
     {
         $this->container = $container;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HTTP METHODS
+    |--------------------------------------------------------------------------
+    */
 
     public function get(string $uri, array $action, array $middlewares = []): void
     {
@@ -35,19 +45,68 @@ class Router
         $this->addRoute('DELETE', $uri, $action, $middlewares);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | GROUP (Prefix + Middleware)
+    |--------------------------------------------------------------------------
+    */
+
+    public function group(array $options, callable $callback): void
+    {
+        $previousPrefix = $this->currentGroupPrefix;
+        $previousMiddlewares = $this->currentGroupMiddlewares;
+
+        // Prefix
+        if (isset($options['prefix'])) {
+            $this->currentGroupPrefix .= $options['prefix'];
+        }
+
+        // Middleware
+        if (isset($options['middleware'])) {
+            $this->currentGroupMiddlewares = array_merge(
+                $this->currentGroupMiddlewares,
+                (array) $options['middleware']
+            );
+        }
+
+        $callback($this);
+
+        // Restore ค่าเดิม (รองรับ nested group)
+        $this->currentGroupPrefix = $previousPrefix;
+        $this->currentGroupMiddlewares = $previousMiddlewares;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADD ROUTE
+    |--------------------------------------------------------------------------
+    */
+
     private function addRoute(
         string $method,
         string $uri,
         array $action,
         array $middlewares
     ): void {
+
+        $fullUri = $this->currentGroupPrefix . $uri;
+
         $this->routes[] = [
             'method' => $method,
-            'uri' => $uri,
+            'uri' => $fullUri,
             'action' => $action,
-            'middlewares' => $middlewares
+            'middlewares' => array_merge(
+                $this->currentGroupMiddlewares,
+                $middlewares
+            )
         ];
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DISPATCH
+    |--------------------------------------------------------------------------
+    */
 
     public function dispatch(string $method, string $uri): void
     {
@@ -59,7 +118,13 @@ class Router
                 continue;
             }
 
-            $pattern = preg_replace('#\{[a-zA-Z]+\}#', '([0-9]+)', $route['uri']);
+            // รองรับ {id} parameter
+            $pattern = preg_replace(
+                '#\{[a-zA-Z_]+\}#',
+                '([0-9]+)',
+                $route['uri']
+            );
+
             $pattern = "#^" . $pattern . "$#";
 
             if (preg_match($pattern, $uri, $matches)) {
@@ -70,25 +135,35 @@ class Router
 
                 $controller = $this->container->get($class);
 
-                //สร้าง dispatcher
                 $dispatcher = new MiddlewareDispatcher();
 
-                //ใส่ middleware ตาม route
+                // โหลด middleware
                 foreach ($route['middlewares'] as $middlewareClass) {
                     $dispatcher->add(
                         $this->container->get($middlewareClass)
                     );
                 }
 
-                //ห่อ controller call ด้วย closure
-                $dispatcher->dispatch(function () use ($controller, $methodName, $matches) {
-                    call_user_func_array([$controller, $methodName], $matches);
+                $dispatcher->dispatch(function () use (
+                    $controller,
+                    $methodName,
+                    $matches
+                ) {
+                    call_user_func_array(
+                        [$controller, $methodName],
+                        $matches
+                    );
                 });
 
                 return;
             }
         }
 
+        $this->notFound();
+    }
+
+    private function notFound(): void
+    {
         http_response_code(404);
         echo json_encode([
             'success' => false,

@@ -1,0 +1,241 @@
+openapi: 3.0.0
+
+info:
+  title: Research Management System API
+  version: 1.0.0
+  description: API documentation for RMS (JWT Auth + RBAC)
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /login:
+    post:
+      summary: User login
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /researchers:
+    get:
+      summary: Get all researchers
+      tags:
+        - Researchers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of researchers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearcherListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Create researcher (Admin only)
+      tags:
+        - Researchers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateResearcherRequest'
+      responses:
+        '201':
+          description: Researcher created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /researchers/{id}:
+    get:
+      summary: Get researcher by ID
+      tags:
+        - Researchers
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResearcherId'
+      responses:
+        '200':
+          description: Researcher detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearcherResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete researcher (Admin only)
+      tags:
+        - Researchers
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResearcherId'
+      responses:
+        '200':
+          description: Researcher deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandardResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ResearcherId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+
+    StandardResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Operation successful
+        data:
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Unauthorized
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            access_token:
+              type: string
+            expires_in:
+              type: integer
+
+    CreateResearcherRequest:
+      type: object
+      required:
+        - name
+        - name_department_eng
+        - name_department_thai
+      properties:
+        name:
+          type: string
+        name_department_eng:
+          type: string
+        name_department_thai:
+          type: string
+
+    ResearcherResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            researcher_id:
+              type: integer
+            name:
+              type: string
+            name_department_eng:
+              type: string
+            name_department_thai:
+              type: string
+
+    ResearcherListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            type: object
