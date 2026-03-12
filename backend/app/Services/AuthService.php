@@ -2,15 +2,15 @@
 
 namespace RMS\Backend\Services;
 
-use RMS\Backend\Models\User;
+use RMS\Backend\Models\UserManage;
 use Exception;
 
 class AuthService
 {
-    private User $userModel;
+    private UserManage $userModel;
     private JwtService $jwtService;
 
-    public function __construct(User $userModel, JwtService $jwtService)
+    public function __construct(UserManage $userModel, JwtService $jwtService)
     {
         $this->userModel = $userModel;
         $this->jwtService = $jwtService;

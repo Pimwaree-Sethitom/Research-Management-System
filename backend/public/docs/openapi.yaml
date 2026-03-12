@@ -31,81 +31,22 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /researchers:
+  /usermanage:
     get:
-      summary: Get all researchers
+      summary: Get all users with researcher details and roles
       tags:
-        - Researchers
+        - User Management
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: List of researchers
+          description: List of users with details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResearcherListResponse'
+                $ref: '#/components/schemas/UserManageListResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
-
-    post:
-      summary: Create researcher (Admin only)
-      tags:
-        - Researchers
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateResearcherRequest'
-      responses:
-        '201':
-          description: Researcher created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StandardResponse'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-
-  /researchers/{id}:
-    get:
-      summary: Get researcher by ID
-      tags:
-        - Researchers
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/ResearcherId'
-      responses:
-        '200':
-          description: Researcher detail
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResearcherResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-    delete:
-      summary: Delete researcher (Admin only)
-      tags:
-        - Researchers
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/ResearcherId'
-      responses:
-        '200':
-          description: Researcher deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StandardResponse'
-        '403':
-          $ref: '#/components/responses/Forbidden'
 
 components:
 
@@ -114,14 +55,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-  parameters:
-    ResearcherId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
 
   responses:
     Unauthorized:
@@ -195,40 +128,7 @@ components:
             expires_in:
               type: integer
 
-    CreateResearcherRequest:
-      type: object
-      required:
-        - name
-        - name_department_eng
-        - name_department_thai
-      properties:
-        name:
-          type: string
-        name_department_eng:
-          type: string
-        name_department_thai:
-          type: string
-
-    ResearcherResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        message:
-          type: string
-        data:
-          type: object
-          properties:
-            researcher_id:
-              type: integer
-            name:
-              type: string
-            name_department_eng:
-              type: string
-            name_department_thai:
-              type: string
-
-    ResearcherListResponse:
+    UserManageListResponse:
       type: object
       properties:
         success:
@@ -239,3 +139,17 @@ components:
           type: array
           items:
             type: object
+            properties:
+              user_id:
+                type: integer
+              full_name:
+                type: string
+              department_name_en:
+                type: string
+              email:
+                type: string
+              is_active:
+                type: integer
+              roles:
+                type: string
+                description: Comma-separated list of roles

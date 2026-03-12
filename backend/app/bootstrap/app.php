@@ -1,17 +1,16 @@
 <?php
 
 use RMS\Backend\Core\Container;
-use RMS\Backend\Models\Researcher;
-use RMS\Backend\Models\User;
-use RMS\Backend\Services\ResearcherService;
-use RMS\Backend\Controllers\ResearcherController;
+use RMS\Backend\Models\UserManage;
 use RMS\Backend\Services\JwtService;
 use RMS\Backend\Middlewares\AuthMiddleware;
 use RMS\Backend\Middlewares\JwtMiddleware;
 use RMS\Backend\Middlewares\RoleMiddleware;
 use RMS\Backend\Controllers\AuthController;
 use RMS\Backend\Services\AuthService;
+use RMS\Backend\Services\UserManageService;
 use RMS\Backend\Services\SeederService;
+use RMS\Backend\Controllers\UserController;
 
 
 $container = new Container();
@@ -21,12 +20,8 @@ $container = new Container();
 | Models
 |--------------------------------------------------------------------------
 */
-$container->bind(Researcher::class, function () {
-    return new Researcher();
-});
-
-$container->bind(User::class, function () {
-    return new User();
+$container->bind(UserManage::class, function () {
+    return new UserManage();
 });
 
 /*
@@ -34,9 +29,9 @@ $container->bind(User::class, function () {
 | Services
 |--------------------------------------------------------------------------
 */
-$container->bind(ResearcherService::class, function ($c) {
-    return new ResearcherService(
-        $c->get(Researcher::class)
+$container->bind(UserManageService::class, function ($c) {
+    return new UserManageService(
+        $c->get(UserManage::class)
     );
 });
 
@@ -46,14 +41,14 @@ $container->bind(JwtService::class, function () {
 
 $container->bind(AuthService::class, function ($c) {
     return new AuthService(
-        $c->get(User::class),        
+        $c->get(UserManage::class),        
         $c->get(JwtService::class)   
     );
 });
 
 $container->bind(SeederService::class, function ($c) {
     return new SeederService(
-        $c->get(User::class)
+        $c->get(UserManage::class)
     );
 });
 
@@ -62,9 +57,9 @@ $container->bind(SeederService::class, function ($c) {
 | Controllers
 |--------------------------------------------------------------------------
 */
-$container->bind(ResearcherController::class, function ($c) {
-    return new ResearcherController(
-        $c->get(ResearcherService::class)
+$container->bind(UserController::class, function ($c) {
+    return new UserController(
+        $c->get(UserManageService::class)
     );
 });
 
@@ -87,7 +82,7 @@ $container->bind(AuthMiddleware::class, function ($c) {
 
 $container->bind(JwtMiddleware::class, function ($c) {
     return new JwtMiddleware(
-        $c->get(JwtService::class)
+        $c->get(UserManageService::class)
     );
 });
 

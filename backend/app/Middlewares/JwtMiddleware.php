@@ -4,17 +4,17 @@ namespace RMS\Backend\Middleware;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use RMS\Backend\Services\UserService;
+use RMS\Backend\Services\UserManageService;
 use RMS\Backend\Utils\Response;
 use RMS\Backend\Exceptions\UnauthorizedException;
 
 class JwtMiddleware
 {
-    private UserService $userService;
+    private UserManageService $userService;
 
-    public function __construct()
+    public function __construct(UserManageService $userService)
     {
-        $this->userService = new UserService();
+        $this->userService = $userService;
     }
 
     public function handle(): void
@@ -75,8 +75,8 @@ class JwtMiddleware
     {
         $user = $this->userService->getUserWithRoles($userId);
 
-        if (!$user['is_active']) {
-            throw new UnauthorizedException("User account inactive");
+        if (empty($user) || !$user['is_active']) {
+            throw new UnauthorizedException("User account inactive or not found");
         }
 
         return $user;

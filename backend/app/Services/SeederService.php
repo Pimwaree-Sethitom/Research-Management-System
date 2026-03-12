@@ -2,13 +2,13 @@
 
 namespace RMS\Backend\Services;
 
-use RMS\Backend\Models\User;
+use RMS\Backend\Models\UserManage;
 
 class SeederService
 {
-    private User $userModel;
+    private UserManage $userModel;
 
-    public function __construct(User $userModel)
+    public function __construct(UserManage $userModel)
     {
         $this->userModel = $userModel;
     }
@@ -26,17 +26,38 @@ class SeederService
         $user = $this->userModel->findByEmail($adminEmail);
 
         if (!$user) {
-            // 2. ถ้ายังไม่มี ให้สร้าง User ใหม่
-            $userId = $this->userModel->create([
-                'email' => $adminEmail,
-                'password_hash' => password_hash($adminPass, PASSWORD_BCRYPT)
+            // 2. ถ้ายังไม่มี ให้สร้าง Researcher ใหม่สำหรับ Admin
+            $researcherId = $this->userModel->createResearcher([
+                'name' => 'Admin System',
+                'name_department_eng' => 'Administration',
+                'name_department_thai' => 'ฝ่ายบริหารจัดการ'
             ]);
 
-            // 3. ตรวจสอบและสร้าง Role 'admin'
+            // 3. สร้าง User ใหม่และผูกกับ ResearcherId
+            $userId = $this->userModel->create([
+                'email' => $adminEmail,
+                'password_hash' => password_hash($adminPass, PASSWORD_BCRYPT),
+                'researcher_id' => $researcherId
+            ]);
+
+            // 4. ตรวจสอบและสร้าง Role 'admin'
             $roleId = $this->userModel->ensureRole('admin');
 
-            // 4. ผูก Role กับ User
+            // 5. ผูก Role กับ User
             $this->userModel->assignRole($userId, $roleId);
+        } else if (empty($user['researcher_id'])) {
+            // กรณีมี User แล้วแต่ยังไม่ได้ผูกกับ Researcher (เช่น จากข้อมูลเก่า)
+            $researcherId = $this->userModel->createResearcher([
+                'name' => 'Admin System',
+                'name_department_eng' => 'Administration',
+                'name_department_thai' => 'ฝ่ายบริหารจัดการ'
+            ]);
+            
+            $this->userModel->update($user['user_id'], [
+                'email' => $user['email'],
+                'researcher_id' => $researcherId,
+                'is_active' => $user['is_active']
+            ]);
         }
     }
 }
