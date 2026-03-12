@@ -37,7 +37,7 @@ class Researcher
     public function create(array $data): int
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO researchers (name, name_department_eng, name_department_thai)
+            "INSERT INTO researchers (full_name, department_name_en, department_name_th)
              VALUES (:name, :dept_eng, :dept_thai)"
         );
 
@@ -55,9 +55,9 @@ class Researcher
     {
         $stmt = $this->db->prepare(
             "UPDATE researchers
-             SET name = :name,
-                 name_department_eng = :dept_eng,
-                 name_department_thai = :dept_thai
+             SET full_name = :name,
+                 department_name_en = :dept_eng,
+                 department_name_th = :dept_thai
              WHERE researcher_id = :id"
         );
 

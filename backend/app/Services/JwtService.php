@@ -7,8 +7,13 @@ use Firebase\JWT\Key;
 
 class JwtService
 {
-    private string $secret = "super_secret_key_change_this";
+    private string $secret;
     private string $algo = "HS256";
+
+    public function __construct()
+    {
+        $this->secret = $_ENV['JWT_SECRET'] ?? 'default_unsafe_secret';
+    }
 
     public function generate(array $payload): string
     {

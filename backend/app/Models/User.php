@@ -47,4 +47,49 @@ class User
 
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
+
+    public function create(array $data): int
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO users (email, password_hash)
+            VALUES (:email, :password)
+        ");
+        $stmt->execute([
+            'email' => $data['email'],
+            'password' => $data['password_hash']
+        ]);
+
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function ensureRole(string $roleName): int
+    {
+        $stmt = $this->db->prepare("
+            SELECT role_id FROM roles WHERE role_name = :name
+        ");
+        $stmt->execute(['name' => $roleName]);
+        $roleId = $stmt->fetchColumn();
+
+        if (!$roleId) {
+            $stmt = $this->db->prepare("
+                INSERT INTO roles (role_name) VALUES (:name)
+            ");
+            $stmt->execute(['name' => $roleName]);
+            $roleId = (int) $this->db->lastInsertId();
+        }
+
+        return (int) $roleId;
+    }
+
+    public function assignRole(int $userId, int $roleId): void
+    {
+        $stmt = $this->db->prepare("
+            INSERT IGNORE INTO user_roles (user_id, role_id)
+            VALUES (:user_id, :role_id)
+        ");
+        $stmt->execute([
+            'user_id' => $userId,
+            'role_id' => $roleId
+        ]);
+    }
 }
