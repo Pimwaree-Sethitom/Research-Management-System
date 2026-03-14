@@ -19,4 +19,5 @@ $router->group(['middleware' => [AuthMiddleware::class]], function ($router) {
     $router->get('/usermanage/{id}', [UserController::class, 'show']);
     $router->post('/usermanage', [UserController::class, 'store']);
     $router->put('/usermanage/{id}', [UserController::class, 'update']);
+    $router->delete('/usermanage/{id}', [UserController::class, 'destroy']);
 });

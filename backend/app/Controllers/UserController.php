@@ -34,10 +34,11 @@ class UserController
 
     public function store(): void
     {
-        $input = json_decode(file_get_contents('php://input'), true);
+        $json = file_get_contents('php://input');
+        $input = json_decode($json, true);
         
-        if (!$input) {
-            Response::error("Invalid JSON payload");
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Response::error("Invalid JSON payload: " . json_last_error_msg(), 400);
             return;
         }
 
@@ -51,10 +52,11 @@ class UserController
 
     public function update(int $id): void
     {
-        $input = json_decode(file_get_contents('php://input'), true);
+        $json = file_get_contents('php://input');
+        $input = json_decode($json, true);
         
-        if (!$input) {
-            Response::error("Invalid JSON payload");
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Response::error("Invalid JSON payload: " . json_last_error_msg(), 400);
             return;
         }
 
@@ -64,6 +66,20 @@ class UserController
                 Response::success(null, "User updated successfully");
             } else {
                 Response::error("User not found or update failed", 404);
+            }
+        } catch (\Exception $e) {
+            Response::error($e->getMessage(), 500);
+        }
+    }
+
+    public function destroy(int $id): void
+    {
+        try {
+            $success = $this->service->delete($id);
+            if ($success) {
+                Response::success(null, "User deleted successfully");
+            } else {
+                Response::error("User not found or deletion failed", 404);
             }
         } catch (\Exception $e) {
             Response::error($e->getMessage(), 500);

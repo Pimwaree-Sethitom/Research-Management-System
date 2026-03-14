@@ -219,6 +219,39 @@ class UserManage
         }
     }
 
+    public function deleteWithDetails(int $userId): bool
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // 1. Get researcher_id before deleting the user
+            $stmt = $this->db->prepare("SELECT researcher_id FROM users WHERE user_id = :id");
+            $stmt->execute(['id' => $userId]);
+            $researcherId = $stmt->fetchColumn();
+
+            // 2. Delete user roles
+            $stmt = $this->db->prepare("DELETE FROM user_roles WHERE user_id = :id");
+            $stmt->execute(['id' => $userId]);
+
+            // 3. Delete user
+            $stmt = $this->db->prepare("DELETE FROM users WHERE user_id = :id");
+            $stmt->execute(['id' => $userId]);
+
+            // 4. Delete researcher (since our design is 1:1)
+            if ($researcherId) {
+                $stmt = $this->db->prepare("DELETE FROM researchers WHERE researcher_id = :id");
+                $stmt->execute(['id' => $researcherId]);
+            }
+
+            $this->db->commit();
+            return true;
+
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
     // --- Seeder & Legacy Helper Methods ---
 
     public function createResearcher(array $data): int

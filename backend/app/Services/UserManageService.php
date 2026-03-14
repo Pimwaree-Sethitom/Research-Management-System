@@ -47,4 +47,9 @@ class UserManageService
 
         return $this->userModel->updateWithDetails($id, $data);
     }
+
+    public function delete(int $id): bool
+    {
+        return $this->userModel->deleteWithDetails($id);
+    }
 }

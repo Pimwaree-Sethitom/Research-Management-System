@@ -129,6 +129,24 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+    delete:
+      summary: Delete user by ID
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/schemas/StandardResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
 
   securitySchemes:
