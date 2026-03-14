@@ -11,6 +11,7 @@ use RMS\Backend\Services\AuthService;
 use RMS\Backend\Services\UserManageService;
 use RMS\Backend\Services\SeederService;
 use RMS\Backend\Controllers\UserController;
+use RMS\Backend\Controllers\HealthController;
 
 
 $container = new Container();
@@ -67,6 +68,10 @@ $container->bind(AuthController::class, function ($c) {
     return new AuthController(
         $c->get(AuthService::class)
     );
+});
+
+$container->bind(HealthController::class, function () {
+    return new HealthController();
 });
 
 /*

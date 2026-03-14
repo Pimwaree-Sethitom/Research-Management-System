@@ -6,6 +6,7 @@ use RMS\Backend\Controllers\UserController;
 use RMS\Backend\Middlewares\AuthMiddleware;
 
 
+$router->get('/', [HealthController::class, 'index']);
 $router->get('/health', [HealthController::class, 'check']);
 
 $router->post('/login', [AuthController::class, 'login']);
