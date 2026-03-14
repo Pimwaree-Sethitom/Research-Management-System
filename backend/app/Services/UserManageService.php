@@ -22,4 +22,14 @@ class UserManageService
     {
         return $this->userModel->getUserWithRoles($userId);
     }
+
+    public function create(array $data): int
+    {
+        if (isset($data['password'])) {
+            $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
+            unset($data['password']);
+        }
+        
+        return $this->userModel->createWithDetails($data);
+    }
 }

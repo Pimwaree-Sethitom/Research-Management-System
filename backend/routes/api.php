@@ -16,4 +16,5 @@ $router->group(['middleware' => [AuthMiddleware::class]], function ($router) {
 
     // User Management
     $router->get('/usermanage', [UserController::class, 'index']);
+    $router->post('/usermanage', [UserController::class, 'store']);
 });
