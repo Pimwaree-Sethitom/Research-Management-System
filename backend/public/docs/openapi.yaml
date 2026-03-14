@@ -82,6 +82,53 @@ paths:
         '500':
           description: Server error
 
+  /usermanage/{id}:
+    get:
+      summary: Get user details by ID
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update user details by ID
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          $ref: '#/components/schemas/StandardResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
 
   securitySchemes:
@@ -172,23 +219,37 @@ components:
         data:
           type: array
           items:
-            type: object
-            properties:
-              user_id:
-                type: integer
-              full_name:
-                type: string
-              department_name_th:
-                type: string
-              department_name_en:
-                type: string
-              email:
-                type: string
-              is_active:
-                type: integer
-              roles:
-                type: string
-                description: Comma-separated list of roles
+            $ref: '#/components/schemas/UserDetail'
+
+    UserDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/UserDetail'
+
+    UserDetail:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        full_name:
+          type: string
+        department_name_th:
+          type: string
+        department_name_en:
+          type: string
+        email:
+          type: string
+        is_active:
+          type: integer
+        roles:
+          type: array
+          items:
+            type: string
 
     CreateUserRequest:
       type: object
@@ -218,3 +279,24 @@ components:
           items:
             type: string
           example: ["admin", "researcher"]
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        full_name:
+          type: string
+        department_name_th:
+          type: string
+        department_name_en:
+          type: string
+        is_active:
+          type: integer
+          enum: [0, 1]
+        roles:
+          type: array
+          items:
+            type: string

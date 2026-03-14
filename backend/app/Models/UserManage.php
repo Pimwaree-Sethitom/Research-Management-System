@@ -97,4 +97,111 @@ class UserManage
             throw $e;
         }
     }
+
+    public function getByIdWithDetails(int $userId): ?array
+    {
+        $sql = "
+            SELECT 
+                u.user_id,
+                r.full_name,
+                r.department_name_th,
+                r.department_name_en,
+                u.email,
+                u.is_active,
+                GROUP_CONCAT(ro.role_name) AS roles
+            FROM users u
+            JOIN researchers r ON r.researcher_id = u.researcher_id
+            LEFT JOIN user_roles ur ON ur.user_id = u.user_id
+            LEFT JOIN roles ro ON ro.role_id = ur.role_id
+            WHERE u.user_id = :user_id
+            GROUP BY u.user_id
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        $user = $stmt->fetch();
+
+        if ($user) {
+            $user['roles'] = $user['roles'] ? explode(',', $user['roles']) : [];
+        }
+
+        return $user ?: null;
+    }
+
+    public function updateWithDetails(int $userId, array $data): bool
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // 1. Get current user to find researcher_id
+            $stmt = $this->db->prepare("SELECT researcher_id FROM users WHERE user_id = :id");
+            $stmt->execute(['id' => $userId]);
+            $researcherId = $stmt->fetchColumn();
+
+            if (!$researcherId) return false;
+
+            // 2. Update researchers
+            $stmt = $this->db->prepare("
+                UPDATE researchers 
+                SET full_name = :full_name,
+                    department_name_th = :department_name_th,
+                    department_name_en = :department_name_en
+                WHERE researcher_id = :id
+            ");
+            $stmt->execute([
+                'id' => $researcherId,
+                'full_name' => $data['full_name'],
+                'department_name_th' => $data['department_name_th'],
+                'department_name_en' => $data['department_name_en']
+            ]);
+
+            // 3. Update users
+            $fields = [
+                'email' => $data['email'],
+                'is_active' => $data['is_active'] ?? 1,
+                'id' => $userId
+            ];
+            $sql = "UPDATE users SET email = :email, is_active = :is_active";
+            
+            if (!empty($data['password_hash'])) {
+                $sql .= ", password_hash = :password_hash";
+                $fields['password_hash'] = $data['password_hash'];
+            }
+            
+            $sql .= " WHERE user_id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($fields);
+
+            // 4. Update Roles (Sync)
+            if (isset($data['roles'])) {
+                // Delete existing roles
+                $stmt = $this->db->prepare("DELETE FROM user_roles WHERE user_id = :id");
+                $stmt->execute(['id' => $userId]);
+
+                foreach ($data['roles'] as $roleName) {
+                    // Find/Create role
+                    $stmt = $this->db->prepare("SELECT role_id FROM roles WHERE role_name = :name");
+                    $stmt->execute(['name' => $roleName]);
+                    $roleId = $stmt->fetchColumn();
+
+                    if (!$roleId) {
+                        $stmt = $this->db->prepare("INSERT INTO roles (role_name) VALUES (:name)");
+                        $stmt->execute(['name' => $roleName]);
+                        $roleId = $this->db->lastInsertId();
+                    }
+
+                    // Assign role
+                    $stmt = $this->db->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)");
+                    $stmt->execute(['user_id' => $userId, 'role_id' => $roleId]);
+                }
+            }
+
+            $this->db->commit();
+            return true;
+
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
 }

@@ -23,6 +23,11 @@ class UserManageService
         return $this->userModel->getUserWithRoles($userId);
     }
 
+    public function getById(int $id): ?array
+    {
+        return $this->userModel->getByIdWithDetails($id);
+    }
+
     public function create(array $data): int
     {
         if (isset($data['password'])) {
@@ -31,5 +36,15 @@ class UserManageService
         }
         
         return $this->userModel->createWithDetails($data);
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        if (!empty($data['password'])) {
+            $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
+            unset($data['password']);
+        }
+
+        return $this->userModel->updateWithDetails($id, $data);
     }
 }
