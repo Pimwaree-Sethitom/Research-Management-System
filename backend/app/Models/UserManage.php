@@ -14,6 +14,20 @@ class UserManage
         $this->db = Database::getInstance();
     }
 
+    public function findByEmail(string $email): ?array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function findById(int $id): ?array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE user_id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch() ?: null;
+    }
+
     public function getAllWithDetails(): array
     {
         $sql = "
@@ -203,5 +217,70 @@ class UserManage
             $this->db->rollBack();
             throw $e;
         }
+    }
+
+    // --- Seeder & Legacy Helper Methods ---
+
+    public function createResearcher(array $data): int
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO researchers (full_name, department_name_en, department_name_th)
+            VALUES (:full_name, :dept_en, :dept_th)
+        ");
+        $stmt->execute([
+            'full_name' => $data['name'] ?? 'System',
+            'dept_en' => $data['name_department_eng'] ?? null,
+            'dept_th' => $data['name_department_thai'] ?? null
+        ]);
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function create(array $data): int
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO users (email, password_hash, researcher_id, is_active)
+            VALUES (:email, :password_hash, :researcher_id, :is_active)
+        ");
+        $stmt->execute([
+            'email' => $data['email'],
+            'password_hash' => $data['password_hash'],
+            'researcher_id' => $data['researcher_id'] ?? null,
+            'is_active' => $data['is_active'] ?? 1
+        ]);
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE users SET email = :email, researcher_id = :rid, is_active = :active
+            WHERE user_id = :id
+        ");
+        return $stmt->execute([
+            'email' => $data['email'],
+            'rid' => $data['researcher_id'] ?? null,
+            'active' => $data['is_active'] ?? 1,
+            'id' => $id
+        ]);
+    }
+
+    public function ensureRole(string $roleName): int
+    {
+        $stmt = $this->db->prepare("SELECT role_id FROM roles WHERE role_name = :name");
+        $stmt->execute(['name' => $roleName]);
+        $roleId = $stmt->fetchColumn();
+
+        if (!$roleId) {
+            $stmt = $this->db->prepare("INSERT INTO roles (role_name) VALUES (:name)");
+            $stmt->execute(['name' => $roleName]);
+            $roleId = $this->db->lastInsertId();
+        }
+        return (int) $roleId;
+    }
+
+    public function assignRole(int $userId, int $roleId): void
+    {
+        $stmt = $this->db->prepare("INSERT IGNORE INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)");
+        $stmt->execute(['user_id' => $userId, 'role_id' => $roleId]);
     }
 }
