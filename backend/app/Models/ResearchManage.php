@@ -55,4 +55,105 @@ class ResearchManage
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
+
+    /**
+     * Create a new publication with its authors.
+     *
+     * @param array $data
+     * @return int The new publication ID
+     * @throws \Exception
+     */
+    public function createWithAuthors(array $data): int
+    {
+        // 1. Validate Publication Data
+        if (empty($data['title_th']) && empty($data['title_en'])) {
+            throw new \Exception("At least one title (Thai or English) is required");
+        }
+
+        try {
+            $this->db->beginTransaction();
+
+            // 2. Insert into publications
+            $stmt = $this->db->prepare("
+                INSERT INTO publications (
+                    title_th, title_en, research_type_id, venue_name, publication_year,
+                    issue_number, publish_start_date, publish_end_date, issn_isbn,
+                    page_range, quartile_id, academic_quality, remark, abstract, reference_url
+                ) VALUES (
+                    :title_th, :title_en, :research_type_id, :venue_name, :publication_year,
+                    :issue_number, :publish_start_date, :publish_end_date, :issn_isbn,
+                    :page_range, :quartile_id, :academic_quality, :remark, :abstract, :reference_url
+                )
+            ");
+
+            $stmt->execute([
+                'title_th' => $data['title_th'] ?? null,
+                'title_en' => $data['title_en'] ?? null,
+                'research_type_id' => $data['research_type_id'] ?? null,
+                'venue_name' => $data['venue_name'] ?? null,
+                'publication_year' => $data['publication_year'] ?? null,
+                'issue_number' => $data['issue_number'] ?? null,
+                'publish_start_date' => $data['publish_start_date'] ?? null,
+                'publish_end_date' => $data['publish_end_date'] ?? null,
+                'issn_isbn' => $data['issn_isbn'] ?? null,
+                'page_range' => $data['page_range'] ?? null,
+                'quartile_id' => $data['quartile_id'] ?? null,
+                'academic_quality' => $data['academic_quality'] ?? null,
+                'remark' => $data['remark'] ?? null,
+                'abstract' => $data['abstract'] ?? null,
+                'reference_url' => $data['reference_url'] ?? null,
+            ]);
+
+            $publicationId = (int) $this->db->lastInsertId();
+
+            // 3. Insert into publication_authors
+            if (!empty($data['authors']) && is_array($data['authors'])) {
+                $stmt = $this->db->prepare("
+                    INSERT INTO publication_authors (
+                        publication_id, researcher_id, author_role, workload_definition_id,
+                        contribution_ratio, workload_amount, fiscal_year, academic_year
+                    ) VALUES (
+                        :publication_id, :researcher_id, :author_role, :workload_definition_id,
+                        :contribution_ratio, :workload_amount, :fiscal_year, :academic_year
+                    )
+                ");
+
+                $addedResearchers = [];
+
+                foreach ($data['authors'] as $author) {
+                    // Validate author
+                    if (!isset($author['researcher_id'])) {
+                        throw new \Exception("researcher_id is required for all authors");
+                    }
+
+                    // Prevent duplicate authors for the same publication
+                    if (in_array($author['researcher_id'], $addedResearchers)) {
+                        continue; // Or throw \Exception if you prefer strict error handling
+                    }
+
+                    $stmt->execute([
+                        'publication_id' => $publicationId,
+                        'researcher_id' => $author['researcher_id'],
+                        'author_role' => $author['author_role'] ?? null,
+                        'workload_definition_id' => $author['workload_definition_id'] ?? null,
+                        'contribution_ratio' => $author['contribution_ratio'] ?? null,
+                        'workload_amount' => $author['workload_amount'] ?? null,
+                        'fiscal_year' => $author['fiscal_year'] ?? null,
+                        'academic_year' => $author['academic_year'] ?? null,
+                    ]);
+
+                    $addedResearchers[] = $author['researcher_id'];
+                }
+            }
+
+            $this->db->commit();
+            return $publicationId;
+
+        } catch (\Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e;
+        }
+    }
 }

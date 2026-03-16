@@ -22,4 +22,15 @@ class ResearchService
     {
         return $this->researchModel->getAll();
     }
+
+    /**
+     * Create a new research publication.
+     *
+     * @param array $data
+     * @return int
+     */
+    public function create(array $data): int
+    {
+        return $this->researchModel->createWithAuthors($data);
+    }
 }

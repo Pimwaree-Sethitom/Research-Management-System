@@ -23,4 +23,5 @@ $router->group(['middleware' => [AuthMiddleware::class]], function ($router) {
     $router->delete('/usermanage/{id}', [UserController::class, 'destroy']);
     // Research Management
     $router->get('/research', [ResearchController::class, 'index']);
+    $router->post('/research', [ResearchController::class, 'store']);
 });

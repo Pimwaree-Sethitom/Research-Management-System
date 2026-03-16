@@ -164,6 +164,40 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+    post:
+      summary: Create a new research publication with authors
+      tags:
+        - Research Management
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePublicationRequest'
+      responses:
+        '201':
+          description: Publication created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      publication_id:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          description: Server error
+
 components:
 
   securitySchemes:
@@ -396,3 +430,69 @@ components:
         authors:
           type: string
           description: Comma-separated list of authors and their roles
+
+    CreatePublicationRequest:
+      type: object
+      required:
+        - title_en
+        - research_type_id
+        - publication_year
+      properties:
+        title_th:
+          type: string
+        title_en:
+          type: string
+        research_type_id:
+          type: integer
+        venue_name:
+          type: string
+        publication_year:
+          type: integer
+        issue_number:
+          type: string
+        publish_start_date:
+          type: string
+          format: date
+        publish_end_date:
+          type: string
+          format: date
+        issn_isbn:
+          type: string
+        page_range:
+          type: string
+        quartile_id:
+          type: integer
+        academic_quality:
+          type: string
+        remark:
+          type: string
+        abstract:
+          type: string
+        reference_url:
+          type: string
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorInput'
+
+    AuthorInput:
+      type: object
+      required:
+        - researcher_id
+      properties:
+        researcher_id:
+          type: integer
+        author_role:
+          type: string
+        workload_definition_id:
+          type: integer
+        contribution_ratio:
+          type: number
+          format: float
+        workload_amount:
+          type: number
+          format: float
+        fiscal_year:
+          type: integer
+        academic_year:
+          type: integer
