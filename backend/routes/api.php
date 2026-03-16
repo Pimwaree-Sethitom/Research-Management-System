@@ -3,6 +3,7 @@
 use RMS\Backend\Controllers\HealthController;
 use RMS\Backend\Controllers\AuthController;
 use RMS\Backend\Controllers\UserController;
+use RMS\Backend\Controllers\ResearchController;
 use RMS\Backend\Middlewares\AuthMiddleware;
 
 
@@ -20,4 +21,6 @@ $router->group(['middleware' => [AuthMiddleware::class]], function ($router) {
     $router->post('/usermanage', [UserController::class, 'store']);
     $router->put('/usermanage/{id}', [UserController::class, 'update']);
     $router->delete('/usermanage/{id}', [UserController::class, 'destroy']);
+    // Research Management
+    $router->get('/research', [ResearchController::class, 'index']);
 });

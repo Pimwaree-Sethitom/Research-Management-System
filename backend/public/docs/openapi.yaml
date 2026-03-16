@@ -147,6 +147,23 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /research:
+    get:
+      summary: Get all research publications with author details
+      tags:
+        - Research Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of research publications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
 components:
 
   securitySchemes:
@@ -312,9 +329,70 @@ components:
         department_name_en:
           type: string
         is_active:
-          type: integer
-          enum: [0, 1]
         roles:
           type: array
           items:
             type: string
+
+    ResearchListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Publication'
+
+    Publication:
+      type: object
+      properties:
+        publication_id:
+          type: integer
+        title_th:
+          type: string
+        title_en:
+          type: string
+        research_type_id:
+          type: integer
+        venue_name:
+          type: string
+        publication_year:
+          type: integer
+        issue_number:
+          type: string
+          nullable: true
+        publish_start_date:
+          type: string
+          format: date
+          nullable: true
+        publish_end_date:
+          type: string
+          format: date
+          nullable: true
+        issn_isbn:
+          type: string
+          nullable: true
+        page_range:
+          type: string
+          nullable: true
+        quartile_id:
+          type: integer
+          nullable: true
+        academic_quality:
+          type: string
+          nullable: true
+        remark:
+          type: string
+          nullable: true
+        abstract:
+          type: string
+          nullable: true
+        reference_url:
+          type: string
+          nullable: true
+        authors:
+          type: string
+          description: Comma-separated list of authors and their roles

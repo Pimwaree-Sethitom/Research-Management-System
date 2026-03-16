@@ -2,6 +2,7 @@
 
 use RMS\Backend\Core\Container;
 use RMS\Backend\Models\UserManage;
+use RMS\Backend\Models\ResearchManage;
 use RMS\Backend\Services\JwtService;
 use RMS\Backend\Middlewares\AuthMiddleware;
 use RMS\Backend\Middlewares\JwtMiddleware;
@@ -9,8 +10,10 @@ use RMS\Backend\Middlewares\RoleMiddleware;
 use RMS\Backend\Controllers\AuthController;
 use RMS\Backend\Services\AuthService;
 use RMS\Backend\Services\UserManageService;
+use RMS\Backend\Services\ResearchService;
 use RMS\Backend\Services\SeederService;
 use RMS\Backend\Controllers\UserController;
+use RMS\Backend\Controllers\ResearchController;
 use RMS\Backend\Controllers\HealthController;
 
 
@@ -25,6 +28,10 @@ $container->bind(UserManage::class, function () {
     return new UserManage();
 });
 
+$container->bind(ResearchManage::class, function () {
+    return new ResearchManage();
+});
+
 /*
 |--------------------------------------------------------------------------
 | Services
@@ -33,6 +40,12 @@ $container->bind(UserManage::class, function () {
 $container->bind(UserManageService::class, function ($c) {
     return new UserManageService(
         $c->get(UserManage::class)
+    );
+});
+
+$container->bind(ResearchService::class, function ($c) {
+    return new ResearchService(
+        $c->get(ResearchManage::class)
     );
 });
 
@@ -61,6 +74,12 @@ $container->bind(SeederService::class, function ($c) {
 $container->bind(UserController::class, function ($c) {
     return new UserController(
         $c->get(UserManageService::class)
+    );
+});
+
+$container->bind(ResearchController::class, function ($c) {
+    return new ResearchController(
+        $c->get(ResearchService::class)
     );
 });
 
