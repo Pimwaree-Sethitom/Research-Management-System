@@ -2,59 +2,60 @@
 
 namespace RMS\Backend\Models;
 
+use RMS\Backend\Core\Database;
 use PDO;
 
-class ResearchType
+class Quartile
 {
     private PDO $db;
 
     public function __construct()
     {
-        $this->db = \RMS\Backend\Core\Database::getInstance();
+        $this->db = Database::getInstance();
     }
 
     /**
-     * Get all research types.
+     * Get all quartiles.
      *
      * @return array
      */
     public function getAll(): array
     {
-        $stmt = $this->db->query("SELECT * FROM research_types");
+        $stmt = $this->db->query("SELECT * FROM quartiles");
         return $stmt->fetchAll();
     }
 
     /**
-     * Get a research type by ID.
+     * Get a quartile by ID.
      *
      * @param int $id
      * @return array|null
      */
     public function getById(int $id): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM research_types WHERE research_type_id = :id");
+        $stmt = $this->db->prepare("SELECT * FROM quartiles WHERE quartile_id = :id");
         $stmt->execute(['id' => $id]);
         $result = $stmt->fetch();
         return $result ?: null;
     }
 
     /**
-     * Create a new research type.
+     * Create a new quartile.
      *
      * @param array $data
      * @return int
      */
     public function create(array $data): int
     {
-        $stmt = $this->db->prepare("INSERT INTO research_types (type_name) VALUES (:type_name)");
+        $stmt = $this->db->prepare("INSERT INTO quartiles (quartile_rank) VALUES (:quartile_rank)");
         $stmt->execute([
-            'type_name' => $data['type_name']
+            'quartile_rank' => $data['quartile_rank']
         ]);
         return (int) $this->db->lastInsertId();
     }
 
     /**
-     * Update an existing research type.
+     * Update an existing quartile.
      *
      * @param int $id
      * @param array $data
@@ -62,34 +63,34 @@ class ResearchType
      */
     public function update(int $id, array $data): bool
     {
-        $stmt = $this->db->prepare("UPDATE research_types SET type_name = :type_name WHERE research_type_id = :id");
+        $stmt = $this->db->prepare("UPDATE quartiles SET quartile_rank = :quartile_rank WHERE quartile_id = :id");
         return $stmt->execute([
             'id' => $id,
-            'type_name' => $data['type_name']
+            'quartile_rank' => $data['quartile_rank']
         ]);
     }
 
     /**
-     * Delete a research type.
+     * Delete a quartile.
      *
      * @param int $id
      * @return bool
      */
     public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM research_types WHERE research_type_id = :id");
+        $stmt = $this->db->prepare("DELETE FROM quartiles WHERE quartile_id = :id");
         return $stmt->execute(['id' => $id]);
     }
 
     /**
-     * Check if the research type is being used in any publication.
+     * Check if the quartile is being used in any publication.
      *
      * @param int $id
      * @return bool
      */
     public function isBeingUsed(int $id): bool
     {
-        $stmt = $this->db->prepare("SELECT COUNT(*) FROM publications WHERE research_type_id = :id");
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM publications WHERE quartile_id = :id");
         $stmt->execute(['id' => $id]);
         return (int) $stmt->fetchColumn() > 0;
     }

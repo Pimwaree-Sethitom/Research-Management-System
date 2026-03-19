@@ -2,14 +2,14 @@
 
 namespace RMS\Backend\Controllers;
 
-use RMS\Backend\Services\ResearchTypeService;
+use RMS\Backend\Services\QuartileService;
 use RMS\Backend\Utils\Response;
 
-class ResearchTypeController
+class QuartileController
 {
-    private ResearchTypeService $service;
+    private QuartileService $service;
 
-    public function __construct(ResearchTypeService $service)
+    public function __construct(QuartileService $service)
     {
         $this->service = $service;
     }
@@ -29,7 +29,7 @@ class ResearchTypeController
         try {
             $data = $this->service->getById($id);
             if (!$data) {
-                Response::error("Research Type not found", 404);
+                Response::error("Quartile not found", 404);
                 return;
             }
             Response::success($data);
@@ -48,14 +48,14 @@ class ResearchTypeController
             return;
         }
 
-        if (empty($input['type_name'])) {
-            Response::error("type_name is required", 400);
+        if (empty($input['quartile_rank'])) {
+            Response::error("quartile_rank is required", 400);
             return;
         }
 
         try {
             $id = $this->service->create($input);
-            Response::success(['research_type_id' => $id], "Research Type created successfully", 201);
+            Response::success(['quartile_id' => $id], "Quartile created successfully", 201);
         } catch (\Exception $e) {
             Response::error($e->getMessage(), 500);
         }
@@ -71,17 +71,17 @@ class ResearchTypeController
             return;
         }
 
-        if (empty($input['type_name'])) {
-            Response::error("type_name is required", 400);
+        if (empty($input['quartile_rank'])) {
+            Response::error("quartile_rank is required", 400);
             return;
         }
 
         try {
             $success = $this->service->update($id, $input);
             if ($success) {
-                Response::success(null, "Research Type updated successfully");
+                Response::success(null, "Quartile updated successfully");
             } else {
-                Response::error("Failed to update Research Type", 500);
+                Response::error("Failed to update Quartile", 500);
             }
         } catch (\Exception $e) {
             Response::error($e->getMessage(), 500);
@@ -93,20 +93,20 @@ class ResearchTypeController
         try {
             $data = $this->service->getById($id);
             if (!$data) {
-                Response::error("Research Type not found", 404);
+                Response::error("Quartile not found", 404);
                 return;
             }
 
             if ($this->service->isBeingUsed($id)) {
-                Response::error("Cannot delete research type: It is being used in publications", 400);
+                Response::error("Cannot delete quartile: It is being used in publications", 400);
                 return;
             }
 
             $success = $this->service->delete($id);
             if ($success) {
-                Response::success(null, "Research Type deleted successfully");
+                Response::success(null, "Quartile deleted successfully");
             } else {
-                Response::error("Failed to delete Research Type", 500);
+                Response::error("Failed to delete Quartile", 500);
             }
         } catch (\Exception $e) {
             Response::error($e->getMessage(), 500);

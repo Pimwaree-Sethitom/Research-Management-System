@@ -5,6 +5,7 @@ use RMS\Backend\Controllers\AuthController;
 use RMS\Backend\Controllers\UserController;
 use RMS\Backend\Controllers\ResearchController;
 use RMS\Backend\Controllers\ResearchTypeController;
+use RMS\Backend\Controllers\QuartileController;
 use RMS\Backend\Middlewares\AuthMiddleware;
 
 
@@ -35,4 +36,11 @@ $router->group(['middleware' => [AuthMiddleware::class]], function ($router) {
     $router->post('/research-types', [ResearchTypeController::class, 'store']);
     $router->put('/research-types/{id}', [ResearchTypeController::class, 'update']);
     $router->delete('/research-types/{id}', [ResearchTypeController::class, 'destroy']);
+
+    // Quartile Management
+    $router->get('/quartiles', [QuartileController::class, 'index']);
+    $router->get('/quartiles/{id}', [QuartileController::class, 'show']);
+    $router->post('/quartiles', [QuartileController::class, 'store']);
+    $router->put('/quartiles/{id}', [QuartileController::class, 'update']);
+    $router->delete('/quartiles/{id}', [QuartileController::class, 'destroy']);
 });

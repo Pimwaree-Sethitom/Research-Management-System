@@ -2,13 +2,13 @@
 
 namespace RMS\Backend\Services;
 
-use RMS\Backend\Models\ResearchType;
+use RMS\Backend\Models\Quartile;
 
-class ResearchTypeService
+class QuartileService
 {
-    private ResearchType $model;
+    private Quartile $model;
 
-    public function __construct(ResearchType $model)
+    public function __construct(Quartile $model)
     {
         $this->model = $model;
     }
