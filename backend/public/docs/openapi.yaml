@@ -261,6 +261,119 @@ paths:
         '500':
           description: Server error
 
+  /research-types:
+    get:
+      summary: Get all research types
+      tags:
+        - Research Type Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of research types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResearchType'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Create a new research type
+      tags:
+        - Research Type Management
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type_name
+              properties:
+                type_name:
+                  type: string
+      responses:
+        '201':
+          description: Research type created successfully
+        '400':
+          description: Invalid request
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /research-types/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get a research type by ID
+      tags:
+        - Research Type Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Research type data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchType'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Research type not found
+
+    put:
+      summary: Update a research type
+      tags:
+        - Research Type Management
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type_name
+              properties:
+                type_name:
+                  type: string
+      responses:
+        '200':
+          description: Research type updated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Research type not found
+
+    delete:
+      summary: Delete a research type
+      tags:
+        - Research Type Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Research type deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Research type not found
+
 components:
 
   securitySchemes:
