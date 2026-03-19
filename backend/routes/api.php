@@ -6,6 +6,7 @@ use RMS\Backend\Controllers\UserController;
 use RMS\Backend\Controllers\ResearchController;
 use RMS\Backend\Controllers\ResearchTypeController;
 use RMS\Backend\Controllers\QuartileController;
+use RMS\Backend\Controllers\WorkloadDefinitionController;
 use RMS\Backend\Middlewares\AuthMiddleware;
 
 
@@ -43,4 +44,11 @@ $router->group(['middleware' => [AuthMiddleware::class]], function ($router) {
     $router->post('/quartiles', [QuartileController::class, 'store']);
     $router->put('/quartiles/{id}', [QuartileController::class, 'update']);
     $router->delete('/quartiles/{id}', [QuartileController::class, 'destroy']);
+ 
+    // Workload Definition Management
+    $router->get('/workload-definitions', [WorkloadDefinitionController::class, 'index']);
+    $router->get('/workload-definitions/{id}', [WorkloadDefinitionController::class, 'show']);
+    $router->post('/workload-definitions', [WorkloadDefinitionController::class, 'store']);
+    $router->put('/workload-definitions/{id}', [WorkloadDefinitionController::class, 'update']);
+    $router->delete('/workload-definitions/{id}', [WorkloadDefinitionController::class, 'destroy']);
 });

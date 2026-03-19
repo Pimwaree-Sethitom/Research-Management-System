@@ -4,10 +4,13 @@ use RMS\Backend\Core\Container;
 use RMS\Backend\Models\UserManage;
 use RMS\Backend\Models\ResearchType;
 use RMS\Backend\Models\Quartile;
+use RMS\Backend\Models\WorkloadDefinition;
 use RMS\Backend\Services\ResearchTypeService;
 use RMS\Backend\Services\QuartileService;
+use RMS\Backend\Services\WorkloadDefinitionService;
 use RMS\Backend\Controllers\ResearchTypeController;
 use RMS\Backend\Controllers\QuartileController;
+use RMS\Backend\Controllers\WorkloadDefinitionController;
 use RMS\Backend\Models\ResearchManage;
 use RMS\Backend\Services\JwtService;
 use RMS\Backend\Middlewares\AuthMiddleware;
@@ -37,6 +40,7 @@ $container->bind(UserManage::class, function () {
     $container->bind(ResearchManage::class, fn() => new ResearchManage());
     $container->bind(ResearchType::class, fn() => new ResearchType());
     $container->bind(Quartile::class, fn() => new Quartile());
+    $container->bind(WorkloadDefinition::class, fn() => new WorkloadDefinition());
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +56,7 @@ $container->bind(UserManageService::class, function ($c) {
     $container->bind(ResearchService::class, fn() => new ResearchService($container->get(ResearchManage::class)));
     $container->bind(ResearchTypeService::class, fn() => new ResearchTypeService($container->get(ResearchType::class)));
     $container->bind(QuartileService::class, fn() => new QuartileService($container->get(Quartile::class)));
+    $container->bind(WorkloadDefinitionService::class, fn($c) => new WorkloadDefinitionService($c->get(WorkloadDefinition::class)));
 
 $container->bind(JwtService::class, function () {
     return new JwtService();
@@ -84,6 +89,7 @@ $container->bind(UserController::class, function ($c) {
     $container->bind(ResearchController::class, fn() => new ResearchController($container->get(ResearchService::class)));
     $container->bind(ResearchTypeController::class, fn() => new ResearchTypeController($container->get(ResearchTypeService::class)));
     $container->bind(QuartileController::class, fn() => new QuartileController($container->get(QuartileService::class)));
+    $container->bind(WorkloadDefinitionController::class, fn($c) => new WorkloadDefinitionController($c->get(WorkloadDefinitionService::class)));
 
 $container->bind(AuthController::class, function ($c) {
     return new AuthController(
