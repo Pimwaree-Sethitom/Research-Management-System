@@ -18,16 +18,18 @@ class AuthMiddleware implements MiddlewareInterface
     public function handle(callable $next)
     {
         $headers = getallheaders();
+        $normalizedHeaders = array_change_key_case($headers, CASE_LOWER);
 
-        if (!isset($headers['Authorization'])) {
+        if (!isset($normalizedHeaders['authorization'])) {
             throw new Exception("Unauthorized", 401);
         }
 
-        $token = str_replace('Bearer ', '', $headers['Authorization']);
+        $authHeader = $normalizedHeaders['authorization'];
+        $token = str_replace('Bearer ', '', $authHeader);
 
         try {
             $decoded = $this->jwtService->validate($token);
-            $_REQUEST['user'] = $decoded; // เก็บ user ไว้ใช้ต่อ
+            $_REQUEST['user'] = $decoded;
         } catch (\Exception $e) {
             throw new Exception("Invalid or expired token", 401);
         }
