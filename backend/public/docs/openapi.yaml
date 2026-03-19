@@ -198,6 +198,53 @@ paths:
         '500':
           description: Server error
 
+  /research/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get a research publication by ID
+      tags:
+        - Research Management
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Research publication data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Publication not found
+
+    put:
+      summary: Update a research publication
+      tags:
+        - Research Management
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePublicationRequest'
+      responses:
+        '200':
+          description: Publication updated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Publication not found
+        '500':
+          description: Server error
+
 components:
 
   securitySchemes:

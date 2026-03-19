@@ -24,4 +24,6 @@ $router->group(['middleware' => [AuthMiddleware::class]], function ($router) {
     // Research Management
     $router->get('/research', [ResearchController::class, 'index']);
     $router->post('/research', [ResearchController::class, 'store']);
+    $router->get('/research/{id}', [ResearchController::class, 'show']);
+    $router->put('/research/{id}', [ResearchController::class, 'update']);
 });

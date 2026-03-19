@@ -51,4 +51,52 @@ class ResearchController
             Response::error($e->getMessage(), 500);
         }
     }
+
+    /**
+     * Display the specified research publication.
+     *
+     * @param int $id
+     * @return void
+     */
+    public function show(int $id): void
+    {
+        try {
+            $data = $this->service->getById($id);
+            if (!$data) {
+                Response::error("Publication not found", 404);
+                return;
+            }
+            Response::success($data);
+        } catch (\Exception $e) {
+            Response::error($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Update the specified research publication.
+     *
+     * @param int $id
+     * @return void
+     */
+    public function update(int $id): void
+    {
+        $json = file_get_contents('php://input');
+        $input = json_decode($json, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Response::error("Invalid JSON payload: " . json_last_error_msg(), 400);
+            return;
+        }
+
+        try {
+            $success = $this->service->update($id, $input);
+            if ($success) {
+                Response::success(null, "Publication updated successfully");
+            } else {
+                Response::error("Failed to update publication", 500);
+            }
+        } catch (\Exception $e) {
+            Response::error($e->getMessage(), 500);
+        }
+    }
 }
