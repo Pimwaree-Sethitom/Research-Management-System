@@ -283,4 +283,16 @@ class ResearchManage
             throw $e;
         }
     }
+
+    /**
+     * Delete an existing publication.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete(int $id): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM publications WHERE publication_id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 }

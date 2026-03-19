@@ -99,4 +99,31 @@ class ResearchController
             Response::error($e->getMessage(), 500);
         }
     }
+
+    /**
+     * Remove the specified research publication.
+     *
+     * @param int $id
+     * @return void
+     */
+    public function destroy(int $id): void
+    {
+        try {
+            // Check if exists first
+            $data = $this->service->getById($id);
+            if (!$data) {
+                Response::error("Publication not found", 404);
+                return;
+            }
+
+            $success = $this->service->delete($id);
+            if ($success) {
+                Response::success(null, "Publication deleted successfully");
+            } else {
+                Response::error("Failed to delete publication", 500);
+            }
+        } catch (\Exception $e) {
+            Response::error($e->getMessage(), 500);
+        }
+    }
 }

@@ -56,4 +56,15 @@ class ResearchService
     {
         return $this->researchModel->updateWithAuthors($id, $data);
     }
+
+    /**
+     * Delete an existing research publication.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete(int $id): bool
+    {
+        return $this->researchModel->delete($id);
+    }
 }

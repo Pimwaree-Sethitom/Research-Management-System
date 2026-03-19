@@ -26,4 +26,5 @@ $router->group(['middleware' => [AuthMiddleware::class]], function ($router) {
     $router->post('/research', [ResearchController::class, 'store']);
     $router->get('/research/{id}', [ResearchController::class, 'show']);
     $router->put('/research/{id}', [ResearchController::class, 'update']);
+    $router->delete('/research/{id}', [ResearchController::class, 'destroy']);
 });
