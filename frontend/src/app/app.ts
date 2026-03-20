@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ResearchManagementComponent } from './research-management/research-management';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [CommonModule, ResearchManagementComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
