@@ -1,7 +1,8 @@
 // research-management.component.ts
 import { Component, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 export interface ResearchItem {
   id: number;
@@ -19,15 +20,21 @@ import { Sidebar } from '../sidebar/sidebar';
 @Component({
   selector: 'app-research-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, Sidebar],
+  imports: [CommonModule, ReactiveFormsModule, Sidebar],
   templateUrl: './research-management.component.html',
   styleUrls: ['./research-management.component.scss']
 })
 export class ResearchManagementComponent {
   // State
+  // Form Controls
+  searchControl = new FormControl('');
+  quartileFilter = new FormControl('all');
+
+  // Signals derived from Form Controls
+  searchQuery = toSignal(this.searchControl.valueChanges, { initialValue: '' });
+  selectedQuartile = toSignal(this.quartileFilter.valueChanges, { initialValue: 'all' });
+
   viewMode = signal<'grid' | 'list'>('grid');
-  searchQuery = signal('');
-  selectedQuartile = signal('all');
 
   mockResearch = signal<ResearchItem[]>([
     {
@@ -93,8 +100,8 @@ export class ResearchManagementComponent {
   ]);
 
   filteredResearch = computed(() => {
-    const query = this.searchQuery().toLowerCase();
-    const quartile = this.selectedQuartile();
+    const query = (this.searchQuery() ?? '').toLowerCase();
+    const quartile = this.selectedQuartile() ?? 'all';
 
     return this.mockResearch().filter((item: ResearchItem) => {
       const matchesSearch = item.titleEn.toLowerCase().includes(query) ||
