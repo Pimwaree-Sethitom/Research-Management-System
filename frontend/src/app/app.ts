@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ResearchManagementComponent } from './research-management/research-management';
+import { ResearchManagementComponent } from './component/research-management/research-management';
 
 @Component({
   selector: 'app-root',

@@ -110,10 +110,14 @@
 }
 
 .nav-item.active {
-    background: linear-gradient(90deg, oklch(from var(--primary) l c h / 0.15) 0%, transparent 100%);
-    color: var(--foreground);
-    border-left: 2px solid var(--primary);
-    border-radius: 0 10px 10px 0;
+    background: color-mix(in srgb, var(--primary) 15%, transparent);
+    color: var(--primary);
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.nav-item.active .nav-icon {
+    color: var(--primary);
 }
 
 .tooltip {
@@ -236,11 +240,16 @@
     border-left: 1px solid var(--border);
 }
 
-.user-profile img {
+.user-avatar {
     width: 36px;
     height: 36px;
-    border-radius: 10px;
-    object-fit: cover;
+    border-radius: 50%;
+    background: #ffffff;
+    color: oklch(0.2 0.05 290);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .user-info {
