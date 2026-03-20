@@ -118,11 +118,11 @@
                 <circle cx="12" cy="7" r="4" />
               </svg>
               <div class="avatar-stack">
-                <div *ngFor="let author of item.authors.slice(0, 3)" class="avatar-mini"
-                  [style.background]="'oklch(0.25 0.02 ' + (200 + i * 20) + ')'">
+                <div *ngFor="let author of item.authors.slice(0, 3); let ai = index" class="avatar-mini"
+                  [style.background]="'color-mix(in srgb, var(--secondary) ' + (10 + ai * 10) + '%, var(--card))'">
                   {{ author.substring(0, 2).toUpperCase() }}
                 </div>
-                <div *ngIf="item.authors.length > 3" class="avatar-mini" style="background: var(--muted)">
+                <div *ngIf="item.authors.length > 3" class="avatar-mini plus-more">
                   +{{ item.authors.length - 3 }}
                 </div>
               </div>

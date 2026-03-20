@@ -1,7 +1,8 @@
-import { Component, signal, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, signal, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-login',
@@ -17,19 +18,20 @@ export class Login {
   protected loading = signal(false);
   protected focused = signal<string | null>(null);
 
-  constructor(
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
+  private themeService = inject(ThemeService);
+  protected isDarkMode = this.themeService.isDarkMode;
+
+  constructor(private router: Router) { }
 
   async onSubmit() {
     this.loading.set(true);
-
-    // Simulate login delay
     await new Promise(resolve => setTimeout(resolve, 1500));
-
     this.loading.set(false);
     this.router.navigate(['/dashboard']);
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 
   togglePassword() {
