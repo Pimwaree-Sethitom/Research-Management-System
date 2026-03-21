@@ -1,7 +1,7 @@
 .view-wrapper {
     padding: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -80,74 +80,86 @@
 .stat-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
+    border-radius: 20px;
+    padding: 2.25rem 2rem;
+    min-height: 150px;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    transition: transform 0.2s, box-shadow 0.2s;
+    justify-content: space-between;
+    gap: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    background: color-mix(in oklch, var(--card), white 3%);
+    border-color: color-mix(in oklch, var(--border), white 10%);
 }
 
 .stat-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.stat-icon-wrapper.blue {
-    background: color-mix(in srgb, #3b82f6 15%, transparent);
-    color: #3b82f6;
-}
-
-.stat-icon-wrapper.green {
-    background: color-mix(in srgb, #10b981 15%, transparent);
-    color: #10b981;
-}
-
-.stat-icon-wrapper.red {
-    background: color-mix(in srgb, #ef4444 15%, transparent);
-    color: #ef4444;
-}
-
-.stat-icon-wrapper.gold {
-    background: color-mix(in srgb, var(--primary) 15%, transparent);
+    background: color-mix(in srgb, var(--primary) 8%, oklch(0.12 0.02 290));
     color: var(--primary);
+    border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 0 10px color-mix(in srgb, var(--primary) 5%, transparent);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon-wrapper {
+    transform: scale(1.05);
+    background: color-mix(in srgb, var(--primary) 15%, oklch(0.12 0.02 290));
+    box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+/* Remove or override specific color classes if making all gold */
+.stat-icon-wrapper.blue,
+.stat-icon-wrapper.green,
+.stat-icon-wrapper.red,
+.stat-icon-wrapper.gold {
+    background: color-mix(in srgb, var(--primary) 8%, oklch(0.12 0.02 290));
+    color: var(--primary);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .stat-label {
     font-size: 0.875rem;
-    color: var(--muted-foreground);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: capitalize;
 }
 
 .stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
 }
 
 /* Filters Bar */
 .filters-bar {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 1rem;
-    padding: 1rem;
-    background: color-mix(in srgb, var(--card) 50%, transparent);
-    backdrop-filter: blur(8px);
+    padding: 0.75rem 1.25rem;
+    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 12px;
 }
 
 .search-wrapper {
     position: relative;
-    flex: 1;
-    min-width: 280px;
+    width: 380px;
 }
 
 .search-icon {
@@ -161,18 +173,19 @@
 
 .search-input {
     width: 100%;
-    padding: 0.625rem 1rem 0.625rem 2.5rem;
+    height: 40px;
+    padding: 0 1rem 0 2.5rem;
     background: var(--background);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 8px;
     color: var(--foreground);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .search-input:focus {
-    border-color: var(--secondary);
+    border-color: var(--primary);
 }
 
 .filter-group {
@@ -181,41 +194,69 @@
 }
 
 .filter-select {
-    padding: 0.625rem 1.5rem 0.625rem 1rem;
+    height: 40px;
+    padding: 0 2.25rem 0 1rem;
     background: var(--background);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 8px;
     color: var(--foreground);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.3)' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+    border-color: var(--primary);
 }
 
 /* User Table */
 .table-container {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .user-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
 }
 
 .user-table th {
     text-align: left;
-    padding: 1rem 1.5rem;
-    background: var(--muted);
+    padding: 1.25rem 1rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     color: var(--muted-foreground);
     border-bottom: 1px solid var(--border);
+    background: color-mix(in oklch, var(--card), white 1%);
 }
 
 .user-table td {
-    padding: 1rem 1.5rem;
+    padding: 1.25rem 1rem;
+    font-size: 0.875rem;
     border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.user-table tr:last-child td {
+    border-bottom: none;
+}
+
+.user-table th:last-child {
+    text-align: center;
+    width: 150px;
+}
+
+.user-table td:last-child {
+    text-align: center;
 }
 
 .user-table tr:last-child td {
@@ -228,17 +269,18 @@
     gap: 0.75rem;
 }
 
-.user-avatar-small {
-    width: 36px;
-    height: 36px;
+.user-avatar {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white;
+    background: color-mix(in oklch, var(--primary), transparent 80%);
+    border: 1px solid color-mix(in oklch, var(--primary), transparent 70%);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary);
 }
 
 .user-name {
@@ -252,58 +294,67 @@
 }
 
 .role-badge {
-    padding: 0.25rem 0.625rem;
+    padding: 0.25rem 1rem;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 600;
+    display: inline-flex;
+    align-items: center;
 }
 
 .role-badge.admin {
-    background: color-mix(in srgb, var(--primary) 15%, transparent);
-    color: var(--primary);
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .role-badge.researcher {
-    background: color-mix(in srgb, var(--secondary) 15%, transparent);
-    color: var(--secondary);
+    background: rgba(139, 92, 246, 0.1);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .role-badge.viewer {
-    background: var(--muted);
-    color: var(--muted-foreground);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.status-indicator {
+
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    text-transform: capitalize;
 }
 
-.status-indicator .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+.status-badge.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-.status-indicator.active .dot {
-    background: #10b981;
-    box-shadow: 0 0 8px #10b981;
+.status-badge.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
-.status-indicator.inactive .dot {
-    background: #ef4444;
-}
-
-.status-indicator.pending .dot {
-    background: var(--primary);
+.status-badge.inactive {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .action-buttons {
     display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
 }
 
 .action-buttons button {
@@ -428,6 +479,6 @@
     margin-right: 0.5rem;
 }
 
-.text-right {
-    text-align: right;
+.text-center {
+    text-align: center;
 }
