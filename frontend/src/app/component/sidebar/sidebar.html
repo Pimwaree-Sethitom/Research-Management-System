@@ -22,8 +22,9 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="#" *ngFor="let item of menuItems; let i = index" class="nav-item animate-slide-in-left"
-                [class.active]="item.name === 'Research Management'" [style.animation-delay]="(i * 50) + 'ms'">
+            <a [routerLink]="item.path" *ngFor="let item of menuItems; let i = index"
+                class="nav-item animate-slide-in-left" routerLinkActive="active"
+                [style.animation-delay]="(i * 50) + 'ms'">
                 <span class="nav-icon" [ngSwitch]="item.icon">
                     <svg *ngSwitchCase="'dashboard'" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
