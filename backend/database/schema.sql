@@ -24,7 +24,7 @@ CREATE TABLE users (
     researcher_id INT,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    is_active TINYINT DEFAULT 1 COMMENT '0: inactive, 1: active, 2: pending',
+    status TINYINT DEFAULT 1 COMMENT '0: inactive, 1: active, 2: pending',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

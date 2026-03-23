@@ -34,6 +34,12 @@ class UserManageService
             $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
             unset($data['password']);
         }
+
+        // Map is_active to status for backward compatibility
+        if (isset($data['is_active'])) {
+            $data['status'] = $data['is_active'];
+            unset($data['is_active']);
+        }
         
         return $this->userModel->createWithDetails($data);
     }
@@ -43,6 +49,12 @@ class UserManageService
         if (!empty($data['password'])) {
             $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
             unset($data['password']);
+        }
+
+        // Map is_active to status for backward compatibility
+        if (isset($data['is_active'])) {
+            $data['status'] = $data['is_active'];
+            unset($data['is_active']);
         }
 
         return $this->userModel->updateWithDetails($id, $data);

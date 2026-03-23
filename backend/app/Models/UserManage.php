@@ -37,7 +37,7 @@ class UserManage
                 r.department_name_th,
                 r.department_name_en,
                 u.email,
-                u.is_active,
+                u.status,
                 GROUP_CONCAT(ro.role_name) AS roles
             FROM users u
             JOIN researchers r ON r.researcher_id = u.researcher_id
@@ -69,14 +69,14 @@ class UserManage
 
             // 2. Insert into users
             $stmt = $this->db->prepare("
-                INSERT INTO users (email, password_hash, researcher_id, is_active)
-                VALUES (:email, :password_hash, :researcher_id, :is_active)
+                INSERT INTO users (email, password_hash, researcher_id, status)
+                VALUES (:email, :password_hash, :researcher_id, :status)
             ");
             $stmt->execute([
                 'email' => $data['email'],
                 'password_hash' => $data['password_hash'],
                 'researcher_id' => $researcherId,
-                'is_active' => $data['is_active'] ?? 1
+                'status' => $data['status'] ?? 1
             ]);
             $userId = $this->db->lastInsertId();
 
@@ -121,7 +121,7 @@ class UserManage
                 r.department_name_th,
                 r.department_name_en,
                 u.email,
-                u.is_active,
+                u.status,
                 GROUP_CONCAT(ro.role_name) AS roles
             FROM users u
             JOIN researchers r ON r.researcher_id = u.researcher_id
@@ -172,10 +172,10 @@ class UserManage
             // 3. Update users
             $fields = [
                 'email' => $data['email'],
-                'is_active' => $data['is_active'] ?? 1,
+                'status' => $data['status'] ?? 1,
                 'id' => $userId
             ];
-            $sql = "UPDATE users SET email = :email, is_active = :is_active";
+            $sql = "UPDATE users SET email = :email, status = :status";
             
             if (!empty($data['password_hash'])) {
                 $sql .= ", password_hash = :password_hash";
@@ -271,14 +271,14 @@ class UserManage
     public function create(array $data): int
     {
         $stmt = $this->db->prepare("
-            INSERT INTO users (email, password_hash, researcher_id, is_active)
-            VALUES (:email, :password_hash, :researcher_id, :is_active)
+            INSERT INTO users (email, password_hash, researcher_id, status)
+            VALUES (:email, :password_hash, :researcher_id, :status)
         ");
         $stmt->execute([
             'email' => $data['email'],
             'password_hash' => $data['password_hash'],
             'researcher_id' => $data['researcher_id'] ?? null,
-            'is_active' => $data['is_active'] ?? 1
+            'status' => $data['status'] ?? 1
         ]);
         return (int) $this->db->lastInsertId();
     }
@@ -286,13 +286,13 @@ class UserManage
     public function update(int $id, array $data): bool
     {
         $stmt = $this->db->prepare("
-            UPDATE users SET email = :email, researcher_id = :rid, is_active = :is_active
+            UPDATE users SET email = :email, researcher_id = :rid, status = :status
             WHERE user_id = :id
         ");
         return $stmt->execute([
             'email' => $data['email'],
             'rid' => $data['researcher_id'] ?? null,
-            'is_active' => $data['is_active'] ?? 1,
+            'status' => $data['status'] ?? 1,
             'id' => $id
         ]);
     }
