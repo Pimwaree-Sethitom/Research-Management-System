@@ -149,8 +149,8 @@
                             </span>
                         </td>
                         <td>
-                            <span class="status-badge" [ngClass]="user.status.toLowerCase()">
-                                {{ user.status }}
+                            <span class="status-badge" [ngClass]="getStatusLabel(user.status)">
+                                {{ getStatusLabel(user.status) | titlecase }}
                             </span>
                         </td>
                         <td class="text-center">

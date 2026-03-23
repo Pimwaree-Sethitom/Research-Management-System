@@ -56,7 +56,7 @@ class SeederService
             $this->userModel->update($user['user_id'], [
                 'email' => $user['email'],
                 'researcher_id' => $researcherId,
-                'is_active' => $user['is_active']
+                'status' => $user['status']
             ]);
         }
     }

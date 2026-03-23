@@ -10,7 +10,7 @@ export interface User {
   email: string;
   department: string;
   role: 'Admin' | 'Researcher' | 'Viewer';
-  status: 'active' | 'inactive' | 'pending';
+  status: 0 | 1 | 2; // 0: inactive, 1: active, 2: pending
   avatar: string;
 }
 
@@ -30,7 +30,7 @@ export class UserManagement {
       email: "somchai.k@up.ac.th",
       department: "Computer Science",
       role: "Admin",
-      status: "active",
+      status: 1,
       avatar: "SK",
     },
     {
@@ -39,7 +39,7 @@ export class UserManagement {
       email: "wichai.s@up.ac.th",
       department: "Information Technology",
       role: "Researcher",
-      status: "active",
+      status: 1,
       avatar: "WS",
     },
     {
@@ -48,7 +48,7 @@ export class UserManagement {
       email: "nattapong.m@up.ac.th",
       department: "Data Science",
       role: "Researcher",
-      status: "active",
+      status: 1,
       avatar: "NM",
     },
     {
@@ -57,7 +57,7 @@ export class UserManagement {
       email: "kittisak.p@up.ac.th",
       department: "Software Engineering",
       role: "Researcher",
-      status: "pending",
+      status: 2,
       avatar: "KP",
     },
     {
@@ -66,7 +66,7 @@ export class UserManagement {
       email: "supachai.w@up.ac.th",
       department: "Cybersecurity",
       role: "Viewer",
-      status: "inactive",
+      status: 0,
       avatar: "SW",
     },
     {
@@ -75,7 +75,7 @@ export class UserManagement {
       email: "chaiyaporn.m@up.ac.th",
       department: "Computer Science",
       role: "Researcher",
-      status: "active",
+      status: 1,
       avatar: "CM",
     },
   ]);
@@ -104,7 +104,10 @@ export class UserManagement {
       const matchesSearch = user.name.toLowerCase().includes(query) ||
         user.email.toLowerCase().includes(query);
       const matchesRole = role === 'all' || user.role === role;
-      const matchesStatus = status === 'all' || user.status === status;
+      const matchesStatus = status === 'all' ||
+        (status === 'active' && user.status === 1) ||
+        (status === 'inactive' && user.status === 0) ||
+        (status === 'pending' && user.status === 2);
       return matchesSearch && matchesRole && matchesStatus;
     });
   });
@@ -113,11 +116,20 @@ export class UserManagement {
     const users = this.mockUsers();
     return {
       total: users.length,
-      active: users.filter(u => u.status === "active").length,
-      inactive: users.filter(u => u.status === "inactive").length,
-      pending: users.filter(u => u.status === "pending").length,
+      active: users.filter(u => u.status === 1).length,
+      inactive: users.filter(u => u.status === 0).length,
+      pending: users.filter(u => u.status === 2).length,
     };
   });
+
+  getStatusLabel(status: number): string {
+    switch (status) {
+      case 1: return 'active';
+      case 0: return 'inactive';
+      case 2: return 'pending';
+      default: return 'unknown';
+    }
+  }
 
   // Event Handlers
   handleEdit(user: User) {

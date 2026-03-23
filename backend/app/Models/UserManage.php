@@ -286,13 +286,13 @@ class UserManage
     public function update(int $id, array $data): bool
     {
         $stmt = $this->db->prepare("
-            UPDATE users SET email = :email, researcher_id = :rid, is_active = :active
+            UPDATE users SET email = :email, researcher_id = :rid, is_active = :is_active
             WHERE user_id = :id
         ");
         return $stmt->execute([
             'email' => $data['email'],
             'rid' => $data['researcher_id'] ?? null,
-            'active' => $data['is_active'] ?? 1,
+            'is_active' => $data['is_active'] ?? 1,
             'id' => $id
         ]);
     }

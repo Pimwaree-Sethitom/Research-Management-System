@@ -75,8 +75,8 @@ class JwtMiddleware
     {
         $user = $this->userService->getUserWithRoles($userId);
 
-        if (empty($user) || !$user['is_active']) {
-            throw new UnauthorizedException("User account inactive or not found");
+        if (empty($user) || $user['status'] != 1) {
+            throw new UnauthorizedException("User account is not active or not found");
         }
 
         return $user;
