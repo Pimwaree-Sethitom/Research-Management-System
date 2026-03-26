@@ -143,10 +143,41 @@ export class UserManagement {
   }
 
   onView(user: User) { console.log("View", user); }
-  onDelete(user: User) { console.log("Delete", user); }
+
+  onApprove(user: User) {
+    this.mockUsers.update(users =>
+      users.map(u => u.id === user.id ? { ...u, status: 1 } : u)
+    );
+  }
+
+  onStatusChange(user: User, event: any) {
+    const newStatus = Number(event.target.value) as (0 | 1 | 2);
+    this.mockUsers.update(users =>
+      users.map(u => u.id === user.id ? { ...u, status: newStatus } : u)
+    );
+  }
+
+  onDelete(user: User) {
+    this.mockUsers.update(users => users.filter(u => u.id !== user.id));
+  }
+
+  onRoleChange(user: User, event: any) {
+    const newRole = event.target.value;
+    this.mockUsers.update(users =>
+      users.map(u => u.id === user.id ? { ...u, role: newRole } : u)
+    );
+  }
+
   onChangeRole(user: User) { console.log("Change role", user); }
-  onSubmitEdit(data: any) {
-    console.log("Submit", data);
+
+  onSubmitEdit(user: User, data: any) {
+    this.mockUsers.update(users =>
+      users.map(u => u.id === user.id ? {
+        ...u,
+        role: data.role,
+        status: Number(data.status) as (0 | 1 | 2)
+      } : u)
+    );
     this.closeEditModal();
   }
 }
